@@ -6,6 +6,7 @@ import { Header } from './components/Header';
 import { BottomNav } from './components/BottomNav';
 import { AuthScreen } from './components/AuthScreen';
 import { LegalTermsModal } from './components/LegalTermsModal';
+import { Theme, getInitialTheme, applyTheme } from './utils/theme';
 
 // Vistas Admin
 import { CuartosAdmin } from './components/admin/CuartosAdmin';
@@ -22,6 +23,18 @@ export const App: React.FC = () => {
   const [session, setSession] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('cuartos');
+  const [theme, setThemeState] = useState<Theme>(getInitialTheme);
+
+  // Inicializar tema visual
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setThemeState(nextTheme);
+    applyTheme(nextTheme);
+  };
 
   // 1. Escuchar sesion de Supabase
   useEffect(() => {
@@ -51,7 +64,6 @@ export const App: React.FC = () => {
         .eq('id', session.user.id)
         .single();
       if (error) {
-        // En caso de que el trigger todavia no termine de crear el perfil
         return {
           id: session.user.id,
           email: session.user.email || '',
@@ -147,7 +159,7 @@ export const App: React.FC = () => {
 
   if (authLoading || (session && loadingPerfil)) {
     return (
-      <div className="min-h-full flex items-center justify-center bg-zinc-50 text-xs text-zinc-500">
+      <div className="min-h-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-500 dark:text-zinc-400">
         Iniciando sistema de gestion...
       </div>
     );
@@ -160,8 +172,8 @@ export const App: React.FC = () => {
   const esAdmin = perfil.rol === 'ADMIN';
 
   return (
-    <div className="min-h-full flex flex-col bg-zinc-50 pb-20 md:pb-6">
-      <Header perfil={perfil} />
+    <div className="min-h-full flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 pb-20 md:pb-6 transition-colors selection:bg-zinc-900 selection:text-white dark:selection:bg-zinc-100 dark:selection:text-zinc-900">
+      <Header perfil={perfil} theme={theme} onToggleTheme={toggleTheme} />
 
       {/* Modal Obligatorio de Aceptacion de Reglas para Inquilinos */}
       {!esAdmin && contratoActivo && !contratoActivo.reglas_aceptadas && (
@@ -172,16 +184,16 @@ export const App: React.FC = () => {
       )}
 
       {/* Navegacion en pantallas medianas y grandes */}
-      <div className="hidden md:block bg-white border-b border-zinc-200/80 px-4">
-        <div className="max-w-5xl mx-auto flex items-center gap-1 py-2">
+      <div className="hidden md:block bg-white dark:bg-zinc-900 border-b border-zinc-200/80 dark:border-zinc-800/80 px-4 transition-colors">
+        <div className="max-w-5xl mx-auto flex items-center gap-1.5 py-2">
           {esAdmin ? (
             <>
               <button
                 onClick={() => setActiveTab('cuartos')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   activeTab === 'cuartos'
-                    ? 'bg-zinc-900 text-white'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                 }`}
               >
                 Habitaciones (5)
@@ -190,8 +202,8 @@ export const App: React.FC = () => {
                 onClick={() => setActiveTab('pagos')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors relative ${
                   activeTab === 'pagos'
-                    ? 'bg-zinc-900 text-white'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                 }`}
               >
                 Pagos y Recaudacion
@@ -205,8 +217,8 @@ export const App: React.FC = () => {
                 onClick={() => setActiveTab('incidencias')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors relative ${
                   activeTab === 'incidencias'
-                    ? 'bg-zinc-900 text-white'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                 }`}
               >
                 Averias e Incidencias
@@ -220,8 +232,8 @@ export const App: React.FC = () => {
                 onClick={() => setActiveTab('contratos')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   activeTab === 'contratos'
-                    ? 'bg-zinc-900 text-white'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                 }`}
               >
                 Contratos e Inquilinos
@@ -233,8 +245,8 @@ export const App: React.FC = () => {
                 onClick={() => setActiveTab('resumen')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   activeTab === 'resumen'
-                    ? 'bg-zinc-900 text-white'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                 }`}
               >
                 Resumen de mi habitacion
@@ -243,8 +255,8 @@ export const App: React.FC = () => {
                 onClick={() => setActiveTab('pagos')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   activeTab === 'pagos'
-                    ? 'bg-zinc-900 text-white'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                 }`}
               >
                 Reportar pago Yape
@@ -253,8 +265,8 @@ export const App: React.FC = () => {
                 onClick={() => setActiveTab('incidencias')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   activeTab === 'incidencias'
-                    ? 'bg-zinc-900 text-white'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                 }`}
               >
                 Reportar averia
@@ -290,11 +302,11 @@ export const App: React.FC = () => {
             )}
           </>
         ) : (
-          <div className="bg-white border border-zinc-200/80 rounded-2xl p-8 text-center max-w-md mx-auto space-y-3 shadow-xs">
-            <h2 className="text-sm font-semibold text-zinc-900">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-8 text-center max-w-md mx-auto space-y-3 shadow-xs">
+            <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
               Sin contrato activo asignado
             </h2>
-            <p className="text-xs text-zinc-500 leading-relaxed">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
               Su cuenta de correo ({perfil.email}) esta registrada en la base de datos, pero el propietario todavia no ha vinculado su habitacion. Por favor, comuniquese con la administracion para que active su contrato de alquiler.
             </p>
           </div>

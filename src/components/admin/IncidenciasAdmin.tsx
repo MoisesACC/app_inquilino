@@ -65,7 +65,7 @@ export const IncidenciasAdmin: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="py-12 text-center text-xs text-zinc-500">
+      <div className="py-12 text-center text-xs text-zinc-500 dark:text-zinc-400">
         Cargando registro de incidencias y mantenimiento...
       </div>
     );
@@ -74,16 +74,16 @@ export const IncidenciasAdmin: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-base font-semibold text-zinc-900 tracking-tight">
+        <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
           Gestion de Averias e Incidencias
         </h2>
-        <p className="text-xs text-zinc-500 mt-0.5">
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
           Reportes de mantenimiento generados por los inquilinos
         </p>
       </div>
 
       {incidencias.length === 0 ? (
-        <div className="bg-white border border-zinc-200/80 rounded-xl p-8 text-center text-xs text-zinc-500">
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-xl p-8 text-center text-xs text-zinc-500 dark:text-zinc-400">
           No se registran averias pendientes ni reclamos en las habitaciones.
         </div>
       ) : (
@@ -91,32 +91,32 @@ export const IncidenciasAdmin: React.FC = () => {
           {incidencias.map((inc) => (
             <div
               key={inc.id}
-              className="bg-white border border-zinc-200/80 rounded-xl p-4 shadow-xs flex flex-col md:flex-row md:items-start justify-between gap-4"
+              className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-xl p-4 shadow-xs flex flex-col md:flex-row md:items-start justify-between gap-4"
             >
               <div className="space-y-1.5 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-zinc-900 text-sm">
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">
                     {inc.cuartos?.numero || 'Habitacion'}
                   </span>
                   <span className="text-zinc-400">·</span>
-                  <span className="text-xs text-zinc-600 font-medium">{inc.titulo}</span>
+                  <span className="text-xs text-zinc-600 dark:text-zinc-300 font-medium">{inc.titulo}</span>
                   <Badge variant={getBadgeVariant(inc.estado)}>
                     {getEstadoLabel(inc.estado)}
                   </Badge>
                 </div>
 
-                <p className="text-xs text-zinc-700 leading-relaxed">
+                <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
                   {inc.descripcion}
                 </p>
 
-                <div className="text-[11px] text-zinc-500 flex items-center gap-3 pt-1">
+                <div className="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-3 pt-1">
                   <span>Reportado por: {inc.perfiles?.nombre_completo || inc.perfiles?.email}</span>
                   <span>·</span>
                   <span>Fecha: {formatDate(inc.fecha_reporte)}</span>
                   {inc.fecha_solucion && (
                     <>
                       <span>·</span>
-                      <span className="text-emerald-700">Resuelto: {formatDate(inc.fecha_solucion)}</span>
+                      <span className="text-emerald-700 dark:text-emerald-400">Resuelto: {formatDate(inc.fecha_solucion)}</span>
                     </>
                   )}
                 </div>
@@ -127,7 +127,7 @@ export const IncidenciasAdmin: React.FC = () => {
                 {inc.foto_url && (
                   <button
                     onClick={() => setFotoModalUrl(inc.foto_url)}
-                    className="inline-flex items-center gap-1 text-xs border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-800 px-2.5 py-1.5 rounded-lg transition-colors font-medium"
+                    className="inline-flex items-center gap-1 text-xs border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-750 text-zinc-800 dark:text-zinc-200 px-2.5 py-1.5 rounded-lg transition-colors font-medium"
                   >
                     <Eye className="w-3.5 h-3.5 stroke-[1.75]" />
                     Ver foto
@@ -138,7 +138,7 @@ export const IncidenciasAdmin: React.FC = () => {
                   <button
                     onClick={() => updateEstadoMutation.mutate({ id: inc.id, estado: 'EN_PROCESO' })}
                     disabled={updateEstadoMutation.isPending}
-                    className="inline-flex items-center gap-1 text-xs border border-zinc-300 hover:bg-zinc-100 text-zinc-800 px-2.5 py-1.5 rounded-lg transition-colors font-medium disabled:opacity-50"
+                    className="inline-flex items-center gap-1 text-xs border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 px-2.5 py-1.5 rounded-lg transition-colors font-medium disabled:opacity-50"
                   >
                     <Clock className="w-3.5 h-3.5 stroke-[1.75]" />
                     En atencion
@@ -149,7 +149,7 @@ export const IncidenciasAdmin: React.FC = () => {
                   <button
                     onClick={() => updateEstadoMutation.mutate({ id: inc.id, estado: 'SOLUCIONADO' })}
                     disabled={updateEstadoMutation.isPending}
-                    className="inline-flex items-center gap-1 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-1 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5 stroke-[1.75]" />
                     Solucionado
@@ -164,19 +164,19 @@ export const IncidenciasAdmin: React.FC = () => {
       {/* Modal Foto de Averia */}
       {fotoModalUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/80 p-4 backdrop-blur-xs">
-          <div className="bg-white border border-zinc-200 rounded-xl max-w-sm w-full p-4 space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-zinc-200">
-              <span className="text-xs font-semibold text-zinc-900">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-sm w-full p-4 space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800">
+              <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
                 Fotografia de Averia Adjunta
               </span>
               <button
                 onClick={() => setFotoModalUrl(null)}
-                className="text-zinc-500 hover:text-zinc-800"
+                className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
               >
                 <X className="w-4 h-4 stroke-[1.75]" />
               </button>
             </div>
-            <div className="max-h-[70vh] overflow-auto flex items-center justify-center bg-zinc-100 rounded-lg p-2">
+            <div className="max-h-[70vh] overflow-auto flex items-center justify-center bg-zinc-100 dark:bg-zinc-950 rounded-lg p-2">
               <img
                 src={fotoModalUrl}
                 alt="Foto incidencia"

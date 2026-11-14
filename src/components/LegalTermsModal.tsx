@@ -32,24 +32,24 @@ export const LegalTermsModal: React.FC<LegalTermsModalProps> = ({ contratoId, on
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/70 p-4 backdrop-blur-xs">
-      <div className="bg-white border border-zinc-200 rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-5 border-b border-zinc-200 bg-zinc-50">
+        <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
           <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 stroke-[1.75] text-zinc-900" />
-            <h2 className="text-base font-semibold text-zinc-900 tracking-tight">
+            <FileText className="w-4 h-4 stroke-[1.75] text-zinc-900 dark:text-zinc-100" />
+            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
               Terminos, Condiciones de Alquiler y Normas de Convivencia
             </h2>
           </div>
-          <p className="text-xs text-zinc-500 mt-1">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
             Conforme al Codigo Civil Peruano y la Ley N° 29733 de Proteccion de Datos Personales.
           </p>
         </div>
 
         {/* Clauses Content */}
-        <div className="p-5 overflow-y-auto space-y-4 text-xs text-zinc-700 leading-relaxed">
-          <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-200">
-            <h3 className="font-semibold text-zinc-900 mb-1">
+        <div className="p-5 overflow-y-auto space-y-4 text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
+          <div className="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
+            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
               1. Condiciones Economicas y Servicios
             </h3>
             <p>
@@ -60,8 +60,8 @@ export const LegalTermsModal: React.FC<LegalTermsModalProps> = ({ contratoId, on
             </p>
           </div>
 
-          <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-200">
-            <h3 className="font-semibold text-zinc-900 mb-1">
+          <div className="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
+            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
               2. Procedimiento de Pago y Clausula Antifraude (Yape / Efectivo)
             </h3>
             <p>
@@ -73,8 +73,8 @@ export const LegalTermsModal: React.FC<LegalTermsModalProps> = ({ contratoId, on
             </p>
           </div>
 
-          <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-200">
-            <h3 className="font-semibold text-zinc-900 mb-1">
+          <div className="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
+            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
               3. Convivencia, Orden y Seguridad Nocturna Obligatoria
             </h3>
             <p>
@@ -86,8 +86,8 @@ export const LegalTermsModal: React.FC<LegalTermsModalProps> = ({ contratoId, on
             </p>
           </div>
 
-          <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-200">
-            <h3 className="font-semibold text-zinc-900 mb-1">
+          <div className="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
+            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
               4. Obligacion de Reporte Inmediato de Desperfectos
             </h3>
             <p>
@@ -97,8 +97,8 @@ export const LegalTermsModal: React.FC<LegalTermsModalProps> = ({ contratoId, on
             </p>
           </div>
 
-          <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-200">
-            <h3 className="font-semibold text-zinc-900 mb-1">
+          <div className="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
+            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
               5. Consentimiento de Tratamiento de Datos (Ley N° 29733)
             </h3>
             <p>
@@ -110,13 +110,13 @@ export const LegalTermsModal: React.FC<LegalTermsModalProps> = ({ contratoId, on
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-zinc-200 bg-zinc-50 flex flex-col gap-3">
-          <label className="flex items-start gap-2.5 cursor-pointer text-xs text-zinc-800 select-none">
+        <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex flex-col gap-3">
+          <label className="flex items-start gap-2.5 cursor-pointer text-xs text-zinc-800 dark:text-zinc-200 select-none">
             <input
               type="checkbox"
               checked={hasAgreed}
               onChange={(e) => setHasAgreed(e.target.checked)}
-              className="mt-0.5 rounded border-zinc-300 text-zinc-900 focus:ring-0 focus:ring-offset-0"
+              className="mt-0.5 rounded border-zinc-300 dark:border-zinc-700 text-zinc-900 focus:ring-0 focus:ring-offset-0"
             />
             <span>
               He leido atentamente las condiciones economicas, el reglamento interno de convivencia y
@@ -128,7 +128,7 @@ export const LegalTermsModal: React.FC<LegalTermsModalProps> = ({ contratoId, on
             <button
               onClick={() => acceptMutation.mutate()}
               disabled={!hasAgreed || acceptMutation.isPending}
-              className="inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white font-medium rounded-lg px-4 py-2.5 text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 font-medium rounded-lg px-4 py-2.5 text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ShieldCheck className="w-4 h-4 stroke-[1.75]" />
               {acceptMutation.isPending ? 'Registrando aceptacion...' : 'Confirmar y acceder al sistema'}

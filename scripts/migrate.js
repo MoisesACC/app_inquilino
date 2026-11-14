@@ -4,7 +4,7 @@ import path from 'path';
 
 const { Client } = pg;
 
-// Cargar variables de entorno si existen
+// Cargar variables desde .env local
 function loadEnv() {
   if (fs.existsSync('.env')) {
     const lines = fs.readFileSync('.env', 'utf-8').split('\n');
@@ -22,16 +22,25 @@ function loadEnv() {
 
 loadEnv();
 
-const dbPassword = process.env.SUPABASE_DB_PASSWORD || '\\%A47",sU~:.}w-4';
+const dbPassword = process.env.SUPABASE_DB_PASSWORD;
+const dbUrl = process.env.DATABASE_URL;
 
-const clientConfig = {
-  host: 'db.ilujxaklmxfmfcscxhfe.supabase.co',
-  port: 5432,
-  user: 'postgres',
-  database: 'postgres',
-  password: dbPassword,
-  ssl: { rejectUnauthorized: false },
-};
+if (!dbPassword && !dbUrl) {
+  console.error('Error de seguridad: No se encontro SUPABASE_DB_PASSWORD o DATABASE_URL en el archivo .env.');
+  console.error('Por favor, defina sus credenciales en su archivo local .env (ignorado por git).');
+  process.exit(1);
+}
+
+const clientConfig = dbUrl
+  ? { connectionString: dbUrl, ssl: { rejectUnauthorized: false } }
+  : {
+      host: process.env.SUPABASE_DB_HOST || 'db.ilujxaklmxfmfcscxhfe.supabase.co',
+      port: 5432,
+      user: process.env.SUPABASE_DB_USER || 'postgres',
+      database: 'postgres',
+      password: dbPassword,
+      ssl: { rejectUnauthorized: false },
+    };
 
 export async function runMigration(sqlFilePath = 'schema.sql') {
   const resolvedPath = path.resolve(sqlFilePath);
@@ -44,7 +53,7 @@ export async function runMigration(sqlFilePath = 'schema.sql') {
   const client = new Client(clientConfig);
 
   try {
-    console.log(`Conectando a base de datos Supabase (${clientConfig.host})...`);
+    console.log('Conectando a base de datos Supabase mediante credenciales de entorno...');
     await client.connect();
     console.log(`Ejecutando script: ${path.basename(resolvedPath)}...`);
     await client.query(sql);
@@ -57,6 +66,5 @@ export async function runMigration(sqlFilePath = 'schema.sql') {
   }
 }
 
-// Ejecutar si se llama directamente
 const targetFile = process.argv[2] || 'schema.sql';
 runMigration(targetFile);

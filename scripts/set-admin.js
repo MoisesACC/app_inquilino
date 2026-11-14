@@ -23,22 +23,42 @@ loadEnv();
 const email = process.argv[2];
 
 if (!email) {
-  console.error('Uso: node scripts/set-admin.js <correo@ejemplo.com>');
+  console.error('Uso: npm run set-admin <correo@ejemplo.com>');
   process.exit(1);
 }
 
-const client = new Client({
-  host: 'db.ilujxaklmxfmfcscxhfe.supabase.co',
-  port: 5432,
-  user: 'postgres',
-  database: 'postgres',
-  password: process.env.SUPABASE_DB_PASSWORD || '\\%A47",sU~:.}w-4',
-  ssl: { rejectUnauthorized: false },
-});
+const dbPassword = process.env.SUPABASE_DB_PASSWORD;
+const dbUrl = process.env.DATABASE_URL;
+
+if (!dbPassword && !dbUrl) {
+  console.error('Error de seguridad: No se encontro SUPABASE_DB_PASSWORD o DATABASE_URL en el archivo .env.');
+  process.exit(1);
+}
+
+const client = new Client(
+  dbUrl
+    ? { connectionString: dbUrl, ssl: { rejectUnauthorized: false } }
+    : {
+        host: process.env.SUPABASE_DB_HOST || 'db.ilujxaklmxfmfcscxhfe.supabase.co',
+        port: 5432,
+        user: process.env.SUPABASE_DB_USER || 'postgres',
+        database: 'postgres',
+        password: dbPassword,
+        ssl: { rejectUnauthorized: false },
+      }
+);
 
 async function run() {
   try {
     await client.connect();
+
+    // 1. Confirmar email en auth.users si estaba pendiente
+    await client.query(
+      `UPDATE auth.users SET email_confirmed_at = COALESCE(email_confirmed_at, now()) WHERE email = $1;`,
+      [email.trim()]
+    );
+
+    // 2. Elevar rol en public.perfiles
     const res = await client.query(
       `UPDATE public.perfiles SET rol = 'ADMIN' WHERE email = $1 RETURNING id, email, rol, nombre_completo;`,
       [email.trim()]
@@ -46,9 +66,9 @@ async function run() {
 
     if (res.rowCount === 0) {
       console.log(`No se encontro ningun usuario registrado con el correo: ${email}`);
-      console.log('Primero registrese en la aplicacion y luego ejecute este comando.');
+      console.log('Primero registrese en la aplicacion (http://localhost:5173) y luego ejecute este comando.');
     } else {
-      console.log('ROL_ADMIN_ASIGNADO_CON_EXITO:');
+      console.log('USUARIO_ADMINISTRADOR_ACTIVADO_EXITOSAMENTE:');
       console.log(res.rows[0]);
     }
   } catch (err) {

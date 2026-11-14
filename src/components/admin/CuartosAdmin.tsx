@@ -60,6 +60,16 @@ export const CuartosAdmin: React.FC = () => {
     },
   });
 
+  // Metricas
+  const totalCuartos = cuartos.length;
+  const ocupadosCount = cuartos.filter(
+    (c) => c.estado === 'OCUPADO' || contratos.some((con) => con.cuarto_id === c.id)
+  ).length;
+  const disponiblesCount = totalCuartos - ocupadosCount;
+  const facturacionMensualProyectada = contratos.reduce((acc, curr) => {
+    return acc + Number(curr.monto_alquiler) + (curr.incluye_cable ? Number(curr.monto_cable) : 0);
+  }, 0);
+
   // Mutacion: Crear Contrato
   const createContratoMutation = useMutation({
     mutationFn: async () => {
@@ -86,7 +96,7 @@ export const CuartosAdmin: React.FC = () => {
       if (contratoError) throw contratoError;
 
       // Generar el primer cobro del mes adelantado
-      const periodoActual = fechaInicio.substring(0, 7); // 'YYYY-MM'
+      const periodoActual = fechaInicio.substring(0, 7);
       const montoTotalPrimerMes = Number(montoAlquiler) + (incluyeCable ? 15.00 : 0);
 
       const { error: pagoError } = await supabase.from('pagos').insert({
@@ -112,7 +122,7 @@ export const CuartosAdmin: React.FC = () => {
     },
   });
 
-  // Mutacion: Liberar cuarto (Finalizar contrato)
+  // Mutacion: Finalizar contrato
   const finalizarContratoMutation = useMutation({
     mutationFn: async (contratoId: string) => {
       const { error } = await supabase
@@ -135,7 +145,7 @@ export const CuartosAdmin: React.FC = () => {
 
   if (loadingCuartos || loadingContratos) {
     return (
-      <div className="py-12 text-center text-xs text-zinc-500">
+      <div className="py-12 text-center text-xs text-zinc-500 dark:text-zinc-400">
         Cargando estado de las habitaciones...
       </div>
     );
@@ -143,15 +153,37 @@ export const CuartosAdmin: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Encabezado de seccion */}
+      {/* Encabezado */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold text-zinc-900 tracking-tight">
+          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
             Control de Habitaciones
           </h2>
-          <p className="text-xs text-zinc-500 mt-0.5">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
             5 unidades habitacionales bajo arrendamiento mensual
           </p>
+        </div>
+      </div>
+
+      {/* Banner de Metricas Rápidas */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-3.5 rounded-xl shadow-xs">
+          <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block font-medium">Total Unidades</span>
+          <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tabular-nums">{totalCuartos}</span>
+        </div>
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-3.5 rounded-xl shadow-xs">
+          <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block font-medium">Ocupadas</span>
+          <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tabular-nums">{ocupadosCount}</span>
+        </div>
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-3.5 rounded-xl shadow-xs">
+          <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block font-medium">Disponibles</span>
+          <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{disponiblesCount}</span>
+        </div>
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-3.5 rounded-xl shadow-xs">
+          <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block font-medium">Renta Mensual Estimada</span>
+          <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tabular-nums">
+            {formatCurrency(facturacionMensualProyectada)}
+          </span>
         </div>
       </div>
 
@@ -164,56 +196,56 @@ export const CuartosAdmin: React.FC = () => {
           return (
             <div
               key={cuarto.id}
-              className="bg-white border border-zinc-200/80 rounded-xl p-4 shadow-xs flex flex-col justify-between"
+              className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-xl p-4 shadow-xs flex flex-col justify-between hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
             >
               <div>
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-sm font-semibold text-zinc-900 tracking-tight">
+                    <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
                       {cuarto.numero}
                     </h3>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">Piso {cuarto.piso}</p>
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Piso {cuarto.piso}</p>
                   </div>
                   <Badge variant={estaOcupado ? 'rose' : 'emerald'}>
                     {estaOcupado ? 'Ocupado' : 'Disponible'}
                   </Badge>
                 </div>
 
-                <div className="mt-3 py-2 border-y border-zinc-100 flex items-center justify-between text-xs">
-                  <span className="text-zinc-500">Tarifa base</span>
-                  <span className="font-semibold text-zinc-900 tabular-nums">
+                <div className="mt-3 py-2 border-y border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
+                  <span className="text-zinc-500 dark:text-zinc-400">Tarifa base</span>
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-100 tabular-nums">
                     {formatCurrency(cuarto.precio_base)}
                   </span>
                 </div>
 
                 {/* Info Inquilino */}
                 {contratoActivo ? (
-                  <div className="mt-3 bg-zinc-50 p-2.5 rounded-lg border border-zinc-200/60 text-xs space-y-1">
-                    <div className="flex items-center gap-1.5 text-zinc-900 font-medium">
-                      <UserCheck className="w-3.5 h-3.5 stroke-[1.75] text-zinc-700" />
+                  <div className="mt-3 bg-zinc-50 dark:bg-zinc-950 p-2.5 rounded-lg border border-zinc-200/60 dark:border-zinc-800/80 text-xs space-y-1">
+                    <div className="flex items-center gap-1.5 text-zinc-900 dark:text-zinc-200 font-medium">
+                      <UserCheck className="w-3.5 h-3.5 stroke-[1.75] text-zinc-700 dark:text-zinc-400" />
                       <span className="truncate">{contratoActivo.perfiles?.nombre_completo || contratoActivo.perfiles?.email}</span>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-zinc-500">
-                      <span>Corte mensual: dia {contratoActivo.dia_corte}</span>
+                    <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
+                      <span>Corte: dia {contratoActivo.dia_corte}</span>
                       {contratoActivo.incluye_cable && (
-                        <span className="inline-flex items-center gap-1 text-zinc-700">
+                        <span className="inline-flex items-center gap-1 text-zinc-700 dark:text-zinc-300">
                           <Tv className="w-3 h-3 stroke-[1.75]" /> Cable (+S/ 15)
                         </span>
                       )}
                     </div>
-                    <div className="text-[11px] text-zinc-400">
+                    <div className="text-[11px] text-zinc-400 dark:text-zinc-500">
                       Inicio: {formatDate(contratoActivo.fecha_inicio)}
                     </div>
                   </div>
                 ) : (
-                  <p className="mt-3 text-xs text-zinc-400 italic">
+                  <p className="mt-3 text-xs text-zinc-400 dark:text-zinc-600 italic">
                     Sin contrato vigente asignado.
                   </p>
                 )}
               </div>
 
               {/* Accion */}
-              <div className="mt-4 pt-3 border-t border-zinc-100">
+              <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800/80">
                 {estaOcupado && contratoActivo ? (
                   <button
                     onClick={() => {
@@ -222,14 +254,14 @@ export const CuartosAdmin: React.FC = () => {
                       }
                     }}
                     disabled={finalizarContratoMutation.isPending}
-                    className="w-full text-center text-xs text-rose-700 hover:text-rose-800 hover:bg-rose-50 py-1.5 px-3 rounded-md transition-colors border border-rose-200 font-medium disabled:opacity-50"
+                    className="w-full text-center text-xs text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 py-1.5 px-3 rounded-md transition-colors border border-rose-200 dark:border-rose-900 font-medium disabled:opacity-50"
                   >
                     Finalizar contrato
                   </button>
                 ) : (
                   <button
                     onClick={() => abrirModalContrato(cuarto)}
-                    className="w-full flex items-center justify-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-white py-1.5 px-3 rounded-lg text-xs font-medium transition-colors"
+                    className="w-full flex items-center justify-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 py-1.5 px-3 rounded-lg text-xs font-medium transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5 stroke-[1.75]" />
                     Asignar contrato
@@ -244,25 +276,25 @@ export const CuartosAdmin: React.FC = () => {
       {/* Modal para Crear Contrato */}
       {showModal && selectedCuarto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/70 p-4 backdrop-blur-xs">
-          <div className="bg-white border border-zinc-200 rounded-xl shadow-lg max-w-lg w-full p-5 space-y-4">
-            <div className="border-b border-zinc-200 pb-3">
-              <h3 className="text-sm font-semibold text-zinc-900 tracking-tight">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl max-w-lg w-full p-5 space-y-4">
+            <div className="border-b border-zinc-200 dark:border-zinc-800 pb-3">
+              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
                 Asignar Contrato · {selectedCuarto.numero}
               </h3>
-              <p className="text-xs text-zinc-500 mt-0.5">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                 Piso {selectedCuarto.piso} · Tarifa referencial: {formatCurrency(selectedCuarto.precio_base)}
               </p>
             </div>
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block font-medium text-zinc-700 mb-1">
+                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                   Seleccionar Inquilino
                 </label>
                 <select
                   value={inquilinoId}
                   onChange={(e) => setInquilinoId(e.target.value)}
-                  className="w-full border border-zinc-300 rounded-lg px-3 py-2 bg-white text-zinc-900 focus:outline-none focus:border-zinc-900"
+                  className="w-full border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100"
                 >
                   <option value="">Seleccione un inquilino registrado...</option>
                   {perfiles.map((p) => (
@@ -272,26 +304,26 @@ export const CuartosAdmin: React.FC = () => {
                   ))}
                 </select>
                 {perfiles.length === 0 && (
-                  <p className="text-[11px] text-zinc-500 mt-1">
-                    No hay inquilinos registrados. Pida al inquilino iniciar sesion una vez con Google.
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
+                    No hay inquilinos registrados. Pida al inquilino registrarse con su correo en el sistema.
                   </p>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-medium text-zinc-700 mb-1">
+                  <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                     Fecha de Inicio
                   </label>
                   <input
                     type="date"
                     value={fechaInicio}
                     onChange={(e) => setFechaInicio(e.target.value)}
-                    className="w-full border border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-zinc-900"
+                    className="w-full border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-zinc-700 mb-1">
+                  <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                     Dia de Corte Mensual
                   </label>
                   <input
@@ -300,14 +332,14 @@ export const CuartosAdmin: React.FC = () => {
                     max="31"
                     value={diaCorte}
                     onChange={(e) => setDiaCorte(Number(e.target.value))}
-                    className="w-full border border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-zinc-900 tabular-nums"
+                    className="w-full border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 tabular-nums"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-medium text-zinc-700 mb-1">
+                  <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                     Alquiler Mensual (S/)
                   </label>
                   <input
@@ -315,11 +347,11 @@ export const CuartosAdmin: React.FC = () => {
                     step="10"
                     value={montoAlquiler}
                     onChange={(e) => setMontoAlquiler(Number(e.target.value))}
-                    className="w-full border border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-zinc-900 tabular-nums"
+                    className="w-full border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 tabular-nums"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-zinc-700 mb-1">
+                  <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                     Garantia (S/)
                   </label>
                   <input
@@ -327,31 +359,30 @@ export const CuartosAdmin: React.FC = () => {
                     step="10"
                     value={montoGarantia}
                     onChange={(e) => setMontoGarantia(Number(e.target.value))}
-                    className="w-full border border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-zinc-900 tabular-nums"
+                    className="w-full border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 tabular-nums"
                   />
                 </div>
               </div>
 
-              {/* Clausulas del contrato */}
-              <div className="space-y-2 pt-2 border-t border-zinc-100">
-                <label className="flex items-center gap-2 cursor-pointer select-none">
+              <div className="space-y-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                <label className="flex items-center gap-2 cursor-pointer select-none text-zinc-800 dark:text-zinc-200">
                   <input
                     type="checkbox"
                     checked={incluyeCable}
                     onChange={(e) => setIncluyeCable(e.target.checked)}
-                    className="rounded border-zinc-300 text-zinc-900"
+                    className="rounded border-zinc-300 dark:border-zinc-700 text-zinc-900"
                   />
                   <span>
-                    Servicio opcional de TV por Cable (adiciona <span className="font-medium tabular-nums">S/ 15.00</span> fijos al mes)
+                    Servicio opcional de TV por Cable (adiciona <span className="font-medium tabular-nums">S/ 15.00</span> al mes)
                   </span>
                 </label>
 
-                <label className="flex items-center gap-2 cursor-pointer select-none">
+                <label className="flex items-center gap-2 cursor-pointer select-none text-zinc-800 dark:text-zinc-200">
                   <input
                     type="checkbox"
                     checked={mesAdelantado}
                     onChange={(e) => setMesAdelantado(e.target.checked)}
-                    className="rounded border-zinc-300 text-zinc-900"
+                    className="rounded border-zinc-300 dark:border-zinc-700 text-zinc-900"
                   />
                   <span>
                     Modalidad obligatoria de mes adelantado al ingresar
@@ -359,19 +390,19 @@ export const CuartosAdmin: React.FC = () => {
                 </label>
               </div>
 
-              <div className="bg-zinc-50 p-2.5 rounded-lg border border-zinc-200 text-[11px] text-zinc-600">
+              <div className="bg-zinc-50 dark:bg-zinc-950 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-600 dark:text-zinc-400">
                 Al activar el contrato se emitira el primer recibo en estado PENDIENTE por un total de{' '}
-                <strong className="text-zinc-900 tabular-nums">
+                <strong className="text-zinc-900 dark:text-zinc-100 tabular-nums">
                   {formatCurrency(Number(montoAlquiler) + (incluyeCable ? 15.00 : 0))}
                 </strong>.
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-200">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-200 dark:border-zinc-800">
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="px-3 py-2 rounded-lg text-xs font-medium text-zinc-600 hover:bg-zinc-100 transition-colors"
+                className="px-3 py-2 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
@@ -379,7 +410,7 @@ export const CuartosAdmin: React.FC = () => {
                 type="button"
                 onClick={() => createContratoMutation.mutate()}
                 disabled={!inquilinoId || createContratoMutation.isPending}
-                className="bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+                className="bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 px-4 py-2 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
               >
                 {createContratoMutation.isPending ? 'Activando...' : 'Crear contrato activo'}
               </button>

@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 
 export const AuthScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState<'google' | 'email_login' | 'email_signup'>('google');
+  const [mode, setMode] = useState<'google' | 'email_login' | 'email_signup'>('email_login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [nombre, setNombre] = useState('');
@@ -63,70 +63,70 @@ export const AuthScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-full flex flex-col justify-center items-center px-4 py-12 bg-zinc-50">
+    <div className="min-h-full flex flex-col justify-center items-center px-4 py-12 bg-zinc-50 dark:bg-zinc-950 transition-colors">
       <div className="max-w-md w-full space-y-6">
         {/* Identidad */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 bg-zinc-900 text-white rounded-xl mx-auto flex items-center justify-center shadow-xs">
+          <div className="w-12 h-12 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl mx-auto flex items-center justify-center shadow-xs">
             <Home className="w-6 h-6 stroke-[1.75]" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-zinc-900">
+          <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
             Control de Alquiler de Habitaciones
           </h1>
-          <p className="text-xs text-zinc-500 max-w-xs mx-auto">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto">
             Plataforma administrativa y de autogestion para arrendamiento de 5 habitaciones.
           </p>
         </div>
 
         {/* Tarjeta de Acceso */}
-        <div className="bg-white border border-zinc-200/80 rounded-2xl p-6 shadow-xs space-y-5">
-          <div className="flex border-b border-zinc-100 pb-3 gap-2">
-            <button
-              type="button"
-              onClick={() => { setMode('google'); setErrorMsg(null); }}
-              className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                mode === 'google'
-                  ? 'bg-zinc-900 text-white'
-                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
-              }`}
-            >
-              Google
-            </button>
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-6 shadow-xs space-y-5">
+          <div className="flex border-b border-zinc-100 dark:border-zinc-800 pb-3 gap-2">
             <button
               type="button"
               onClick={() => { setMode('email_login'); setErrorMsg(null); }}
               className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                 mode === 'email_login' || mode === 'email_signup'
-                  ? 'bg-zinc-900 text-white'
-                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                  ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
               }`}
             >
               Correo / Clave
             </button>
+            <button
+              type="button"
+              onClick={() => { setMode('google'); setErrorMsg(null); }}
+              className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                mode === 'google'
+                  ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+              }`}
+            >
+              Google
+            </button>
           </div>
 
           {errorMsg && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 leading-relaxed">
+            <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-lg text-xs text-rose-700 dark:text-rose-400 leading-relaxed">
               {errorMsg}
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-700 leading-relaxed">
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg text-xs text-emerald-700 dark:text-emerald-400 leading-relaxed">
               {successMsg}
             </div>
           )}
 
           {mode === 'google' ? (
             <div className="space-y-4">
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 Inicie sesion con su cuenta personal de Gmail. No requiere contrasena adicional.
               </p>
 
               <button
                 onClick={handleGoogleLogin}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2.5 bg-zinc-900 hover:bg-zinc-800 text-white font-medium rounded-xl py-3 px-4 text-xs transition-colors disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2.5 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 font-medium rounded-xl py-3 px-4 text-xs transition-colors disabled:opacity-50"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -153,7 +153,7 @@ export const AuthScreen: React.FC = () => {
             <form onSubmit={handleEmailAuth} className="space-y-3 text-xs">
               {mode === 'email_signup' && (
                 <div>
-                  <label className="block font-medium text-zinc-700 mb-1">
+                  <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                     Nombre completo
                   </label>
                   <input
@@ -162,13 +162,13 @@ export const AuthScreen: React.FC = () => {
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
                     placeholder="Ej. Juan Perez Rodriguez"
-                    className="w-full border border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-zinc-900"
+                    className="w-full border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100"
                   />
                 </div>
               )}
 
               <div>
-                <label className="block font-medium text-zinc-700 mb-1">
+                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                   Correo electronico
                 </label>
                 <div className="relative">
@@ -179,13 +179,13 @@ export const AuthScreen: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="correo@ejemplo.com"
-                    className="w-full pl-9 border border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-zinc-900"
+                    className="w-full pl-9 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-medium text-zinc-700 mb-1">
+                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                   Contrasena
                 </label>
                 <div className="relative">
@@ -197,7 +197,7 @@ export const AuthScreen: React.FC = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Minimo 6 caracteres"
-                    className="w-full pl-9 border border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-zinc-900"
+                    className="w-full pl-9 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100"
                   />
                 </div>
               </div>
@@ -205,7 +205,7 @@ export const AuthScreen: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-2 flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white font-medium rounded-xl py-2.5 px-4 text-xs transition-colors disabled:opacity-50"
+                className="w-full mt-2 flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 font-medium rounded-xl py-2.5 px-4 text-xs transition-colors disabled:opacity-50"
               >
                 {loading ? (
                   <Loader2 className="w-4 h-4 stroke-[1.75] animate-spin" />
@@ -228,7 +228,7 @@ export const AuthScreen: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => { setMode('email_signup'); setErrorMsg(null); }}
-                    className="text-zinc-600 hover:text-zinc-900 text-xs"
+                    className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 text-xs"
                   >
                     No tiene cuenta? <span className="underline font-medium">Registrese aqui</span>
                   </button>
@@ -236,7 +236,7 @@ export const AuthScreen: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => { setMode('email_login'); setErrorMsg(null); }}
-                    className="text-zinc-600 hover:text-zinc-900 text-xs"
+                    className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 text-xs"
                   >
                     Ya tiene cuenta? <span className="underline font-medium">Inicie sesion</span>
                   </button>
@@ -245,7 +245,7 @@ export const AuthScreen: React.FC = () => {
             </form>
           )}
 
-          <div className="pt-2 border-t border-zinc-100 flex items-center justify-center gap-1.5 text-[11px] text-zinc-500">
+          <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
             <ShieldCheck className="w-3.5 h-3.5 stroke-[1.75]" />
             <span>Proteccion de datos conforme a la Ley N° 29733 (Peru)</span>
           </div>
